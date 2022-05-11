@@ -7,6 +7,9 @@ import dds.monedero.exceptions.SaldoMenorException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MonederoTest {
@@ -18,51 +21,67 @@ public class MonederoTest {
   }
 
   @Test
-  void Poner() {
-    cuenta.poner(1500);
+  void DepositarSolo1500() {
+    cuenta.depositar(1500);
+    assertEquals(cuenta.getSaldo(),1500,0);
   }
 
   @Test
-  void PonerMontoNegativo() {
-    assertThrows(MontoNegativoException.class, () -> cuenta.poner(-1500));
+  void PonerMontoNegativoLanzaUnaExcepcion() {
+    assertThrows(MontoNegativoException.class, () -> cuenta.depositar(-1500));
   }
 
   @Test
-  void TresDepositos() {
-    cuenta.poner(1500);
-    cuenta.poner(456);
-    cuenta.poner(1900);
+  void DepositarTresVeces3856() { //se testea la sumatoria de los depositos
+    cuenta.depositar(1500);
+    cuenta.depositar(456);
+    cuenta.depositar(1900);
+    assertEquals(cuenta.getSaldo(),3856,0);
   }
 
   @Test
-  void MasDeTresDepositos() {
+  void MasDeTresDepositosLanzaUnaExcepcion() {
     assertThrows(MaximaCantidadDepositosException.class, () -> {
-          cuenta.poner(1500);
-          cuenta.poner(456);
-          cuenta.poner(1900);
-          cuenta.poner(245);
+          cuenta.depositar(1500);
+          cuenta.depositar(456);
+          cuenta.depositar(1900);
+          cuenta.depositar(245);
     });
   }
 
   @Test
-  void ExtraerMasQueElSaldo() {
+  void ExtraerMasQueElSaldoLanzaUnaExcepcion() {
     assertThrows(SaldoMenorException.class, () -> {
           cuenta.setSaldo(90);
-          cuenta.sacar(1001);
+          cuenta.retirar(1001);
     });
   }
 
   @Test
-  public void ExtraerMasDe1000() {
+  public void ExtraerMasDe1000LanzaUnaExcepcion() {
     assertThrows(MaximoExtraccionDiarioException.class, () -> {
       cuenta.setSaldo(5000);
-      cuenta.sacar(1001);
+      cuenta.retirar(1001);
     });
   }
 
   @Test
-  public void ExtraerMontoNegativo() {
-    assertThrows(MontoNegativoException.class, () -> cuenta.sacar(-500));
+  public void ExtraerMontoNegativoLanzaUnaExcepcion() {
+    assertThrows(MontoNegativoException.class, () -> cuenta.retirar(-500));
+  }
+
+  @Test
+  void LaCuentaTieneDosMovimientos() {
+    cuenta.depositar(1500);
+    cuenta.retirar(456);
+    assertEquals(cuenta.getMovimientos().size(),2,0);
+  }
+
+  @Test
+  void HoySeExtrageron500() {
+    cuenta.depositar(1500);
+    cuenta.retirar(500);
+    assertEquals(cuenta.getMontoExtraidoA(LocalDate.now()),500,0);
   }
 
 }
