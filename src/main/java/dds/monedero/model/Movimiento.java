@@ -25,28 +25,29 @@ public class Movimiento {
   }
 
   public boolean fueDepositado(LocalDate fecha) {
-    return isDeposito() && esDeLaFecha(fecha);
+    return esDeposito() && esDeLaFecha(fecha);
   }
 
   public boolean fueExtraido(LocalDate fecha) {
-    return isExtraccion() && esDeLaFecha(fecha);
+    return !esDeposito() && esDeLaFecha(fecha);
   }
 
   public boolean esDeLaFecha(LocalDate fecha) {
     return this.fecha.equals(fecha);
   }
 
-  public boolean isDeposito() {
+  public boolean esDeposito() {
     return esDeposito;
   }
 
-  public boolean isExtraccion() {
+  // no es necesario, para eso se haces !isDeposito
+  /*public boolean isExtraccion() {
     return !esDeposito;
-  }
+  }*/
 
-  public void agregateA(Cuenta cuenta) {
+  public void agregateACuenta(Cuenta cuenta) {
     cuenta.setSaldo(calcularValor(cuenta));
-    cuenta.agregarMovimiento(fecha, monto, esDeposito);
+    cuenta.agregarMovimiento(this);
   }
 
   public double calcularValor(Cuenta cuenta) {
